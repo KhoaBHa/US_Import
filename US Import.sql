@@ -154,31 +154,3 @@ FROM
 	WHERE order_date between '2016-08-01' and '2018-12-01') a
 GROUP BY a.[Order Country]
 ORDER BY 1 desc
-
-
-					--CREATE VIEW FOR DATA VISUALIZATION
-	--DROP VIEW IF EXISTS EV_DATA
-CREATE VIEW EV_DATA AS
-SELECT [VIN]
-      ,[County]
-      ,[City]
-      ,[State]
-      ,[Postal Code]
-      ,[Model Year]
-      ,[Make]
-      ,[Model]
-      ,[Electric_Vehicle_Type]
-      ,[CAFV_Eligibility]
-      ,[Electric_Range]
-      ,[Base_MSRP]
-    --,[Legislative_District]
-    --,[DOL_Vehicle_ID]
-    --,[Vehicle_Location]
-      ,[Electric_Utility]
-    --,[2020_Census_Tract]
-      ,[longitude]
-      ,[latitude]
-FROM [Portfolios].[dbo].[EVs]
-
-SELECT *
-FROM EV_DATA
