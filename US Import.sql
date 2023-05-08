@@ -104,11 +104,11 @@ ORDER BY [Order Region]
 
 	--Total profit/loss from each region each year
 WITH CTE_profit_loss AS
-	(SELECT [Order Region], sum(profit_loss) as total_profit_each_state
+	(SELECT [Order Region], sum(profit_loss) as total_profit_each_state --Calculate the profit/loss for each region
 	FROM shipping_US
 	GROUP BY [Order Region])
 
-SELECT [Order Region], total_profit_each_state,
+SELECT [Order Region], total_profit_each_state, --Label if the region is making a profit/loss
 	CASE
 		WHEN total_profit_each_state > 0 then 'Profitable'
 		WHEN total_profit_each_state < 0 then 'Unprofitable'
@@ -119,9 +119,9 @@ FROM CTE_profit_loss
 	--Preferred shipping mode of each payment type
 WITH CTE_shipping_method AS (
 SELECT a.payment_type, a.[Shipping Mode], a.number_of_order,
-	RANK() OVER (PARTITION BY a.payment_type ORDER BY a.number_of_order DESC) as most_preferred_shipping_method
+	RANK() OVER (PARTITION BY a.payment_type ORDER BY a.number_of_order DESC) as most_preferred_shipping_method --Rank the number of order, the highest as 1
 FROM 
-	(SELECT payment_type, [Shipping Mode], COUNT(*) as number_of_order
+	(SELECT payment_type, [Shipping Mode], COUNT(*) as number_of_order --Count the numbers of shipping modes for each payment type
 	FROM shipping_US
 	GROUP BY payment_type, [Shipping Mode]) a)
 
@@ -137,16 +137,17 @@ ORDER BY payment_type
 
 	--Which country imports the most to each state
 WITH CTE_ranking_sales AS (
-SELECT a.*, RANK() OVER (PARTITION BY a.[Customer State] ORDER BY a.total_sale desc) as ranking_sales
+SELECT a.*, RANK() OVER (PARTITION BY a.[Customer State] ORDER BY a.total_sale desc) as ranking_sales --Rank the total sale by states, the highest as 1
 FROM
-	(SELECT [Customer State], [Order Region], [Order Country], SUM(total_sale) as total_sale
+	(SELECT [Customer State], [Order Region], [Order Country], SUM(total_sale) as total_sale --Calculate the total sale
 	FROM shipping_US
 	GROUP BY [Customer State], [Order Region], [Order Country]) a)
 
 SELECT [Customer State], [Order Region], [Order Country], total_sale
 FROM CTE_ranking_sales
 WHERE ranking_sales = 1
-
+	
+	--Calculate the total sale by each country between '2016-08-01' and '2018-12-01'
 SELECT SUM(a.total_sale), a.[Order Country]
 FROM 
 	(SELECT total_sale, [Order Country]
